@@ -46,11 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="TheBoard.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="TheBoard.Designer.cs">
+      <DependentUpon>TheBoard.cs</DependentUpon>
     </Compile>
     <Compile Include="DiagWindow.cs">
       <SubType>Form</SubType>
@@ -63,8 +63,8 @@
     <EmbeddedResource Include="DiagWindow.resx">
       <DependentUpon>DiagWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="TheBoard.resx">
+      <DependentUpon>TheBoard.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

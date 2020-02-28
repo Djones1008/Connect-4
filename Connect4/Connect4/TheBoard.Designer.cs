@@ -1,6 +1,6 @@
 ﻿namespace Connect4
 {
-   partial class Form1
+   partial class TheBoard
    {
       /// <summary>
       /// Required designer variable.

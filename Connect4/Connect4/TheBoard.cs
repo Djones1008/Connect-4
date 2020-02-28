@@ -7,26 +7,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Connect4
 {
-   public partial class Form1 : Form
+   public partial class TheBoard : Form
    {
       // Global variables
       bool playerTurn = true; // Black Coin = true : Red Coin = false
       string[,] theBoard = new string[6, 7];  // [rows, columns]
       int row = -1;
       int column = -1;
+      int turnCounter = 0;
 
       DiagWindow diagWindow;
       bool viewArrayContents = false;
       bool viewPatternBuild = false;
-
-      public Form1()
+      public TheBoard()
       {
          InitializeComponent();
       }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
          this.Close();
@@ -83,7 +83,7 @@ namespace Connect4
          string partCenter = theBoard[row, column];
          string partLower = GenerateDiagonal1Lower(row, column);
 
-         string pattern = partLower + partCenter + partUpper;
+         string pattern = partUpper + partCenter + partLower;
 
          if (viewPatternBuild)
          {
@@ -103,7 +103,7 @@ namespace Connect4
          row2Start++;
          column2Start--;
 
-         while (row2Start < theBoard.GetLength(0) && column2Start <= 0)
+         while (row2Start < theBoard.GetLength(0) && column2Start >= 0)
          {
             pattern += theBoard[row2Start, column2Start];
 
@@ -130,7 +130,6 @@ namespace Connect4
       }
       private string GenerateDiagonal2Upper(int row2Start, int column2Start)
       {
-
          string pattern = "";
          row2Start++;
          column2Start++;
@@ -207,6 +206,30 @@ namespace Connect4
          else
             return false;
       }
+      private int DropRow(int columnClicked)
+      {
+         int row = 0;
+         for(row = 0; row < theBoard.GetLength(1); row++)
+         {
+            if(theBoard[row, columnClicked] == "-")
+            {
+               break;
+            }
+         }
+         return row;
+      }
+      private int DropCoin(int column)
+      {
+         int rowForCoin = DropRow(column);
+         string buttonName = "btn" + rowForCoin + column;
+
+         Button buttonForCoin = (Button)Controls["gbxBoard"].Controls[buttonName];
+
+         buttonForCoin.Image = SetCoinImage();
+         GiveButtonUsedColor(buttonForCoin);
+
+         return rowForCoin;
+      }
       private void GameClick(object sender, EventArgs e)
       {
          Button ButtonClicked = (Button)sender;
@@ -217,37 +240,27 @@ namespace Connect4
             row = int.Parse(ButtonClicked.Name.Substring(3, 1));
             column = int.Parse(ButtonClicked.Name.Substring(4, 1));
 
-            GiveButtonUsedColor(ButtonClicked);
-            ButtonClicked.Image = SetCoinImage();
-            UpdateArrayContents(row, column);
+            int rowWhereCoinIs = DropCoin(column);
 
+            theBoard[rowWhereCoinIs, column] = PlayerValue();
+
+            UpdateArrayContents(rowWhereCoinIs, column);
 
             if (CheckWinner())
             {
                //Annonce Winner
                ResetBoard("DISABLE");
             }
+            else if (turnCounter == 28)
+            {
+               ResetBoard("DISABLE");
+            }
             else
             {
                playerTurn = !playerTurn;
+               turnCounter++;
             }
          }
-
-         /* DisableButtonClicked();
-          * UpdateArrayContents();
-          * CheckForWinner(0;
-          * 
-          * if (winner)
-          *    {
-          *    AnnonceTheWinner();
-          *    ResetBoard();
-          *    }
-          *    else
-          *       ChangeTurn();
-          *
-          */
-
-
       }
       private void ResetGame()
       {
@@ -266,8 +279,14 @@ namespace Connect4
       }
       private void mnustrpReset_Click(object sender, EventArgs e)
       {
-         mnustrpReset.Text = "ResetBoard";
-         ResetGame();    
+         if (txtPlayerOneName.Text.Length > 0 && txtPlayerTwoName.Text.Length > 0)
+         {
+            mnustrpReset.Text = "Reset Board";
+            ResetGame();
+         }
+         else
+            MessageBox.Show("Enter Player Name.");
+
       }
       private void ResetBoard(string typeOfReset)
       {
@@ -292,7 +311,6 @@ namespace Connect4
             }
          }
       }
-
       private void Form1_Load(object sender, EventArgs e)
       {
          //Changes reset button to the text
@@ -308,8 +326,6 @@ namespace Connect4
          diagWindow.ClearDisplay();
          MessageBox.Show("Viewing pattern build has been enabled.");
       }
-
-
       private void EnableDiagnositics()
       {
          // Turn Diagnostics on in the program.
@@ -328,7 +344,7 @@ namespace Connect4
          diagWindow.Text = "Examine Array Contents";
 
          diagWindow.StartPosition = FormStartPosition.Manual;
-         diagWindow.Location = new Point(this.Location.X - 475, this.Location.Y);
+         diagWindow.Location = new Point(this.Location.X - 512, this.Location.Y);
 
          diagWindow.Show();
 
